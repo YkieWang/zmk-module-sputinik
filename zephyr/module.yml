@@ -1,7 +1,7 @@
 # Delete all unused properties.
 
 # Give your module a name
-name: zmk-module-template
+name: zmk-device-detector
 build:
   # List your dependencies
   depends:
@@ -17,3 +17,4 @@ build:
     dts_root: .
     # Folder containing a "snippets" folder (. = root)
     snippet_root:  .
+    module_name: zmk_device_detector

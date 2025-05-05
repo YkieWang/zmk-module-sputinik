@@ -1,0 +1,16 @@
+description: ZMK Module Detector
+
+compatible: "zmk,module-detector"
+
+include: base.yaml
+
+properties:
+  sampling-hz:
+    type: int
+    default: 2
+    description: Sampling frequency in Hz
+
+  io-channels:
+    type: phandle-array
+    required: true
+    description: ADC channel for module detection

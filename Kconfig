@@ -1,0 +1,80 @@
+menuconfig DEVICE_DETECTOR
+    bool "热插拔设备检测器驱动"
+    default n
+    depends on ADC
+    help
+      启用热插拔设备检测器驱动，用于检测连接的设备类型。
+      此驱动基于ADC读取电压值来识别不同的设备类型。
+
+if DEVICE_DETECTOR
+
+config DEVICE_DETECTOR_INIT_PRIORITY
+    int "设备检测器初始化优先级"
+    default 80
+    help
+      设备检测器驱动初始化优先级。
+
+config DEVICE_DETECTOR_LOG_LEVEL
+    int "设备检测器日志级别"
+    default 3
+    range 0 4
+    help
+      0: 关闭, 1: 错误, 2: 警告, 3: 信息, 4: 调试
+
+choice DEVICE_DETECTOR_CALLBACK_TYPE
+    prompt "设备检测回调类型"
+    default DEVICE_DETECTOR_CALLBACK_LAYER
+
+config DEVICE_DETECTOR_CALLBACK_NONE
+    bool "无回调"
+    help
+      检测到设备时不执行任何回调
+
+config DEVICE_DETECTOR_CALLBACK_LAYER
+    bool "层切换回调"
+    depends on ZMK_KEYMAP
+    help
+      检测到设备时触发层切换
+
+config DEVICE_DETECTOR_CALLBACK_EVENT
+    bool "事件回调"
+    help
+      检测到设备时发送事件
+
+endchoice
+
+if DEVICE_DETECTOR_CALLBACK_LAYER
+
+config DEVICE_DETECTOR_LAYER_KNOB
+    int "检测到旋钮时激活的层"
+    default 1
+    help
+      检测到旋钮设备时激活的层编号
+
+config DEVICE_DETECTOR_LAYER_JOYSTICK
+    int "检测到摇杆时激活的层"
+    default 2
+    help
+      检测到摇杆设备时激活的层编号
+
+config DEVICE_DETECTOR_LAYER_TRACKBALL
+    int "检测到轨迹球时激活的层"
+    default 3
+    help
+      检测到轨迹球设备时激活的层编号
+
+config DEVICE_DETECTOR_LAYER_SLIDER
+    int "检测到滑块时激活的层"
+    default 4
+    help
+      检测到滑块设备时激活的层编号
+
+config DEVICE_DETECTOR_LAYER_OTHER
+    int "检测到其他设备时激活的层"
+    default 5
+    help
+      检测到其他类型设备时激活的层编号
+
+endif # DEVICE_DETECTOR_CALLBACK_LAYER
+
+endif # DEVICE_DETECTOR

@@ -1,0 +1,28 @@
+description: ZMK 热插拔设备检测器
+
+compatible: "zmk,device-detector"
+
+include: base.yaml
+
+properties:
+  sampling-hz:
+    type: int
+    default: 2
+    description: 采样频率（Hz）
+
+  io-channels:
+    type: phandle-array
+    required: true
+    description: 用于设备检测的ADC通道
+
+  detection-delay-ms:
+    type: int
+    default: 50
+    description: 设备检测去抖延迟（毫秒）
+
+  voltage-ranges:
+    type: array
+    description: |
+      不同设备类型的电压范围（毫伏）。
+      格式: [设备1_最小值, 设备1_最大值, 设备2_最小值, 设备2_最大值, ...]
+    default: [500, 1000, 1000, 1500, 1500, 2000, 2000, 2500, 2500, 3000] 

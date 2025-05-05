@@ -1,0 +1,28 @@
+description: ZMK Hot Swappable Module Detector
+
+compatible: "zmk,module-detector"
+
+include: base.yaml
+
+properties:
+  sampling-hz:
+    type: int
+    default: 2
+    description: Sampling frequency in Hz
+
+  io-channels:
+    type: phandle-array
+    required: true
+    description: ADC channel for module detection
+
+  detection-delay-ms:
+    type: int
+    default: 50
+    description: Debounce delay for module detection in milliseconds
+
+  voltage-ranges:
+    type: array
+    description: |
+      Voltage ranges for different module types in millivolts.
+      Format: [module1_min, module1_max, module2_min, module2_max, ...]
+    default: [500, 1000, 1500, 2000, 2500, 3000] 

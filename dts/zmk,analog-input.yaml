@@ -1,6 +1,6 @@
-description: ZMK Module Detector
+description: ZMK Device Detector
 
-compatible: "zmk,module-detector"
+compatible: "zmk,device-detector"
 
 include: base.yaml
 
@@ -13,4 +13,4 @@ properties:
   io-channels:
     type: phandle-array
     required: true
-    description: ADC channel for module detection
+    description: ADC channel for device detection

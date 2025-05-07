@@ -1,80 +1,134 @@
+# Copyright (c) 2023 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
 menuconfig DEVICE_DETECTOR
-    bool "热插拔设备检测器驱动"
-    default n
+    bool "ZMK Device Detector"
     depends on ADC
+    depends on KERNEL_COHERENCE
+    select INPUT
     help
-      启用热插拔设备检测器驱动，用于检测连接的设备类型。
-      此驱动基于ADC读取电压值来识别不同的设备类型。
+      Enable ZMK device detector subsystem for detecting hot pluggable devices.
 
 if DEVICE_DETECTOR
 
-config DEVICE_DETECTOR_INIT_PRIORITY
-    int "设备检测器初始化优先级"
-    default 80
-    help
-      设备检测器驱动初始化优先级。
-
-config DEVICE_DETECTOR_LOG_LEVEL
-    int "设备检测器日志级别"
-    default 3
-    range 0 4
-    help
-      0: 关闭, 1: 错误, 2: 警告, 3: 信息, 4: 调试
-
-choice DEVICE_DETECTOR_CALLBACK_TYPE
-    prompt "设备检测回调类型"
+choice DEVICE_DETECTOR_CALLBACK_MODE
+    prompt "Set the callback mode for device type changes"
     default DEVICE_DETECTOR_CALLBACK_LAYER
 
 config DEVICE_DETECTOR_CALLBACK_NONE
-    bool "无回调"
+    bool "Do not trigger callbacks for device type changes"
     help
-      检测到设备时不执行任何回调
-
-config DEVICE_DETECTOR_CALLBACK_LAYER
-    bool "层切换回调"
-    depends on ZMK_KEYMAP
-    help
-      检测到设备时触发层切换
+      Disable all automatic callbacks on device type changes.
 
 config DEVICE_DETECTOR_CALLBACK_EVENT
-    bool "事件回调"
+    bool "Send input events on device type changes"
     help
-      检测到设备时发送事件
+      Send input events when device type changes occur.
+
+config DEVICE_DETECTOR_CALLBACK_LAYER
+    bool "Change layers automatically when device type changes"
+    depends on ZMK_KEYMAP
+    help
+      Automatically change layers when device type changes occur.
 
 endchoice
+
+config DEVICE_DETECTOR_ADAPTIVE_STABILITY
+    bool "Enable adaptive stability detection"
+    default y
+    help
+      Enable adaptive stability detection algorithm to automatically adjust 
+      stability thresholds based on signal quality.
+
+config DEVICE_DETECTOR_ADAPTIVE_STABILITY_WINDOW
+    int "Adaptive stability window size"
+    depends on DEVICE_DETECTOR_ADAPTIVE_STABILITY
+    default 10
+    range 5 50
+    help
+      Number of samples to use for adaptive stability calculations.
+
+config DEVICE_DETECTOR_ADAPTIVE_STABILITY_MIN_QUALITY
+    int "Minimum signal quality threshold"
+    depends on DEVICE_DETECTOR_ADAPTIVE_STABILITY
+    default 30
+    range 0 100
+    help
+      Minimum signal quality threshold (0-100). Below this threshold,
+      the stability requirements will be more stringent.
+
+config DEVICE_DETECTOR_DETECTION_DELAY_MS
+    int "Device detection delay in milliseconds"
+    default 100
+    range 10 1000
+    help
+      Delay in milliseconds between detecting a stable device type and 
+      triggering callbacks, to filter out transient changes.
+
+config DEVICE_DETECTOR_STABILITY_THRESHOLD
+    int "Default stability threshold for device detection"
+    default 2
+    range 1 10
+    help
+      Number of consecutive matching samples required to consider a device type stable.
+      Higher values increase reliability but reduce responsiveness.
+
+config DEVICE_DETECTOR_VOLTAGE_LEARNING
+    bool "Enable voltage range learning mode"
+    default n
+    help
+      Enable automatic learning mode to adapt voltage ranges based on observed values.
+
+config DEVICE_DETECTOR_SAMPLING_HZ
+    int "Default sampling frequency in Hz"
+    default 5
+    range 1 20
+    help
+      Default sampling frequency in Hz for device detection.
+
+config DEVICE_DETECTOR_SHELL
+    bool "Enable shell commands for device detector"
+    depends on SHELL
+    default y
+    help
+      Enable shell commands for controlling and diagnosing the device detector.
 
 if DEVICE_DETECTOR_CALLBACK_LAYER
 
 config DEVICE_DETECTOR_LAYER_KNOB
-    int "检测到旋钮时激活的层"
+    int "Layer to activate for knob device"
     default 1
     help
-      检测到旋钮设备时激活的层编号
+      Layer to activate when a knob device is detected.
 
 config DEVICE_DETECTOR_LAYER_JOYSTICK
-    int "检测到摇杆时激活的层"
+    int "Layer to activate for joystick device"
     default 2
     help
-      检测到摇杆设备时激活的层编号
+      Layer to activate when a joystick device is detected.
 
 config DEVICE_DETECTOR_LAYER_TRACKBALL
-    int "检测到轨迹球时激活的层"
+    int "Layer to activate for trackball device"
     default 3
     help
-      检测到轨迹球设备时激活的层编号
+      Layer to activate when a trackball device is detected.
 
 config DEVICE_DETECTOR_LAYER_SLIDER
-    int "检测到滑块时激活的层"
+    int "Layer to activate for slider device"
     default 4
     help
-      检测到滑块设备时激活的层编号
+      Layer to activate when a slider device is detected.
 
 config DEVICE_DETECTOR_LAYER_OTHER
-    int "检测到其他设备时激活的层"
+    int "Layer to activate for other device"
     default 5
     help
-      检测到其他类型设备时激活的层编号
+      Layer to activate when any other device is detected.
 
 endif # DEVICE_DETECTOR_CALLBACK_LAYER
+
+module = DEVICE_DETECTOR
+module-str = Device Detector
+source "subsys/logging/Kconfig.template.log_config"
 
 endif # DEVICE_DETECTOR

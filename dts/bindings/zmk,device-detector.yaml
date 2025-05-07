@@ -7,7 +7,7 @@ include: base.yaml
 properties:
   sampling-hz:
     type: int
-    default: 2
+    default: 5
     description: 采样频率（Hz）
 
   io-channels:
@@ -17,12 +17,18 @@ properties:
 
   detection-delay-ms:
     type: int
-    default: 50
+    default: 100
     description: 设备检测去抖延迟（毫秒）
+
+  stability-threshold:
+    type: int
+    default: 2
+    description: 设备类型稳定性检测阈值
 
   voltage-ranges:
     type: array
     description: |
       不同设备类型的电压范围（毫伏）。
       格式: [设备1_最小值, 设备1_最大值, 设备2_最小值, 设备2_最大值, ...]
+      设备1=旋钮, 设备2=摇杆, 设备3=轨迹球, 设备4=滑块, 设备5=其他
     default: [500, 1000, 1000, 1500, 1500, 2000, 2000, 2500, 2500, 3000] 

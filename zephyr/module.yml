@@ -5,7 +5,7 @@ name: zmk-device-detector
 build:
   # List your dependencies
   depends:
-    - zmk-example-dependency
+    - zmk
   # Folder containing a "CMakeLists.txt" (. = root)
   cmake: .
   # Kconfig filepath
@@ -16,5 +16,5 @@ build:
     # Folder containing a "dts" folder (. = root)
     dts_root: .
     # Folder containing a "snippets" folder (. = root)
-    snippet_root:  .
+    snippet_root: .
     module_name: zmk_device_detector

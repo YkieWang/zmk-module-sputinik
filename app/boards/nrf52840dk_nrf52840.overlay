@@ -1,0 +1,76 @@
+/*
+ * Copyright (c) 2023 ZMK Contributors
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#include <dt-bindings/zmk/adc-input.h>
+
+/ {
+    chosen {
+        zmk,battery = &vbatt;
+    };
+
+    /* 模拟设备检测器 */
+    device_detector: device_detector {
+        compatible = "zmk,device-detector";
+        status = "okay";
+        io-channels = <&adc 0>; // 使用ADC通道0检测设备
+        adc-threshold-tolerance = <50>; // 阈值容差(毫伏)
+        adc-thresholds = <0 500 1000 1500>; // 各设备的ADC阈值(毫伏)
+        poll-interval-ms = <1000>; // 轮询间隔(毫秒)
+    };
+
+    /* EC11旋钮编码器 */
+    encoder: encoder {
+        compatible = "alps,ec11";
+        status = "okay";
+        a-gpios = <&gpio0 11 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+        b-gpios = <&gpio0 12 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+        steps = <24>;
+        resolution = <4>;
+    };
+
+    /* 模拟输入(摇杆) */
+    analog_joystick: analog_joystick {
+        compatible = "zmk,analog-input";
+        status = "okay";
+        sampling-hz = <50>;
+
+        x_axis {
+            io-channels = <&adc 1>;
+            mv-mid = <1650>;
+            mv-min-max = <1600>;
+            mv-deadzone = <10>;
+            scale-multiplier = <1>;
+            scale-divisor = <10>;
+            invert;
+            evt-type = <0x03>; // EV_ABS
+            input-code = <0x00>; // ABS_X
+        };
+
+        y_axis {
+            io-channels = <&adc 2>;
+            mv-mid = <1650>;
+            mv-min-max = <1600>;
+            mv-deadzone = <10>;
+            scale-multiplier = <1>;
+            scale-divisor = <10>;
+            evt-type = <0x03>; // EV_ABS
+            input-code = <0x01>; // ABS_Y
+        };
+    };
+
+    /* 电池监测 */
+    vbatt: vbatt {
+        compatible = "zmk,battery-voltage-divider";
+        io-channels = <&adc 7>;
+        output-ohms = <2000000>;
+        full-ohms = <(2000000 + 806000)>;
+    };
+};
+
+/* 启用ADC */
+&adc {
+    status = "okay";
+}; 

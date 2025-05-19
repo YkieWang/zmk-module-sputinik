@@ -1,0 +1,63 @@
+description: ZMK模拟输入(摇杆)驱动
+
+compatible: "zmk,analog-input"
+
+include: base.yaml
+
+properties:
+  sampling-hz:
+    type: int
+    default: 100
+    description: 采样频率(Hz)
+
+child-binding:
+  description: 轴通道配置
+
+  properties:
+    io-channels:
+      type: phandle-array
+      required: true
+      description: ADC通道
+
+    mv-mid:
+      type: int
+      default: 1650
+      description: 中点电压(毫伏)
+    
+    mv-min-max:
+      type: int
+      default: 1600
+      description: 最小/最大偏移电压(毫伏)
+    
+    mv-deadzone:
+      type: int
+      default: 10
+      description: 中点死区宽度(毫伏)
+    
+    scale-multiplier:
+      type: int
+      default: 1
+      description: 缩放乘数
+    
+    scale-divisor:
+      type: int
+      default: 1
+      description: 缩放除数
+    
+    invert:
+      type: boolean
+      description: 反转输出
+    
+    report-on-change-only:
+      type: boolean
+      description: 仅在值变化时报告
+    
+    evt-type:
+      type: int
+      required: true
+      description: 输入事件类型
+    
+    input-code:
+      type: int
+      required: true
+      description: 输入事件代码 

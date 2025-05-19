@@ -1,0 +1,26 @@
+description: EC11旋钮增量编码器
+
+compatible: "alps,ec11"
+
+include: base.yaml
+
+properties:
+  a-gpios:
+    type: phandle-array
+    required: true
+    description: A相信号GPIO引脚
+
+  b-gpios:
+    type: phandle-array
+    required: true
+    description: B相信号GPIO引脚
+
+  resolution:
+    type: int
+    default: 1
+    description: 每个脉冲的分辨率
+
+  steps:
+    type: int
+    default: 24
+    description: 编码器每旋转一圈的步数 

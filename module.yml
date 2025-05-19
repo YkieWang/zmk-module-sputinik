@@ -1,0 +1,4 @@
+name: zmk-device-detector
+build:
+  cmake: .
+  kconfig: Kconfig.module 

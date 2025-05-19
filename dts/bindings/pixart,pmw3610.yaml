@@ -1,0 +1,35 @@
+description: PMW3610轨迹球传感器
+
+compatible: "pixart,pmw3610"
+
+include: [spi-device.yaml, input.yaml]
+
+properties:
+  irq-gpios:
+    type: phandle-array
+    required: true
+    description: 中断GPIO引脚，用于数据就绪信号
+
+  cpi:
+    type: int
+    default: 400
+    description: 传感器分辨率(CPI)设置
+
+  evt-type:
+    type: int
+    default: 0x02 # INPUT_EV_REL
+    description: 输入事件类型，通常为相对坐标移动(INPUT_EV_REL)
+
+  x-input-code:
+    type: int
+    default: 0x00 # INPUT_REL_X
+    description: X轴输入代码，通常为REL_X
+
+  y-input-code:
+    type: int
+    default: 0x01 # INPUT_REL_Y 
+    description: Y轴输入代码，通常为REL_Y
+
+  force-awake:
+    type: boolean
+    description: 当ZMK活动状态为ACTIVE时保持传感器唤醒，ZMK进入空闲/睡眠模式后恢复正常省电模式 

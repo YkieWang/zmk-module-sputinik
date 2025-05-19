@@ -1,0 +1,170 @@
+# Copyright (c) 2023 ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+# ZMK设备检测器
+menuconfig ZMK_DEVICE_DETECTOR
+    bool "ZMK设备检测器"
+    default y
+    depends on ADC
+    help
+      启用ZMK设备检测器，用于自动检测和初始化输入设备。
+
+if ZMK_DEVICE_DETECTOR
+
+config ZMK_DEVICE_DETECTOR_LOG_LEVEL
+    int "日志级别"
+    default 3
+    range 0 4
+    help
+      设备检测器日志级别。
+      0: 关闭, 1: 错误, 2: 警告, 3: 信息, 4: 调试
+
+config ZMK_DEVICE_DETECTOR_INIT_PRIORITY
+    int "初始化优先级"
+    default 90
+    help
+      设备检测器初始化优先级。
+
+endif # ZMK_DEVICE_DETECTOR
+
+# EC11旋钮编码器驱动
+menuconfig EC11
+    bool "EC11 增量编码器传感器"
+    default y
+    depends on DT_HAS_ALPS_EC11_ENABLED
+    depends on GPIO
+    help
+      启用EC11增量编码器传感器驱动。
+
+if EC11
+
+choice EC11_TRIGGER_MODE
+    prompt "触发模式"
+    default EC11_TRIGGER_NONE
+    help
+      指定驱动要使用的触发类型。
+
+config EC11_TRIGGER_NONE
+    bool "无触发"
+
+config EC11_TRIGGER_GLOBAL_THREAD
+    bool "使用全局线程"
+    depends on GPIO
+    select EC11_TRIGGER
+
+config EC11_TRIGGER_OWN_THREAD
+    bool "使用独立线程"
+    depends on GPIO
+    select EC11_TRIGGER
+
+endchoice
+
+config EC11_TRIGGER
+    bool
+
+config EC11_THREAD_PRIORITY
+    int "线程优先级"
+    depends on EC11_TRIGGER_OWN_THREAD
+    default 10
+    help
+      驱动用于处理中断的线程优先级。
+
+config EC11_THREAD_STACK_SIZE
+    int "线程栈大小"
+    depends on EC11_TRIGGER_OWN_THREAD
+    default 1024
+    help
+      驱动用于处理中断的线程栈大小。
+
+endif # EC11
+
+# PMW3610轨迹球驱动
+menuconfig PMW3610
+    bool "PMW3610轨迹球传感器"
+    default y
+    depends on DT_HAS_PIXART_PMW3610_ENABLED
+    depends on SPI
+    depends on GPIO
+    help
+      启用PMW3610轨迹球传感器驱动。
+
+if PMW3610
+
+config PMW3610_LOG_LEVEL
+    int "日志级别"
+    default 3
+    range 0 4
+    help
+      PMW3610日志级别。
+      0: 关闭, 1: 错误, 2: 警告, 3: 信息, 4: 调试
+
+config PMW3610_INIT_POWER_UP_EXTRA_DELAY_MS
+    int "额外初始化延迟(毫秒)"
+    default 10
+    help
+      初始化传感器时等待电源稳定的额外延迟时间(毫秒)。
+
+config PMW3610_REPORT_INTERVAL_MIN
+    int "最小报告间隔(毫秒)"
+    default 5
+    help
+      两次输入事件报告之间的最小时间间隔(毫秒)。
+
+config PMW3610_SWAP_XY
+    bool "交换X和Y轴"
+    default n
+    help
+      交换X和Y轴的输出。
+
+config PMW3610_INVERT_X
+    bool "反转X轴"
+    default n
+    help
+      反转X轴的输出方向。
+
+config PMW3610_INVERT_Y
+    bool "反转Y轴"
+    default n
+    help
+      反转Y轴的输出方向。
+
+endif # PMW3610
+
+# 模拟输入(摇杆)驱动
+menuconfig ANALOG_INPUT
+    bool "模拟输入(摇杆)驱动"
+    default y
+    depends on DT_HAS_ZMK_ANALOG_INPUT_ENABLED
+    depends on ADC
+    help
+      启用模拟输入设备驱动(用于摇杆等)。
+
+if ANALOG_INPUT
+
+config ANALOG_INPUT_LOG_LEVEL
+    int "日志级别"
+    default 3
+    range 0 4
+    help
+      模拟输入日志级别。
+      0: 关闭, 1: 错误, 2: 警告, 3: 信息, 4: 调试
+
+config ANALOG_INPUT_LOG_DBG_RAW
+    bool "记录原始ADC值"
+    default n
+    help
+      在调试日志中输出原始ADC读数。
+
+config ANALOG_INPUT_LOG_DBG_REPORT
+    bool "记录报告值"
+    default n
+    help
+      在调试日志中输出报告的输入值。
+
+config ANALOG_INPUT_REPORT_INTERVAL_MIN
+    int "最小报告间隔(毫秒)"
+    default 5
+    help
+      两次输入事件报告之间的最小时间间隔(毫秒)。
+
+endif # ANALOG_INPUT 

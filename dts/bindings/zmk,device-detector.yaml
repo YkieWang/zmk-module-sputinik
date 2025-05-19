@@ -1,0 +1,30 @@
+description: ZMK设备检测器，通过ADC识别不同设备
+
+compatible: "zmk,device-detector"
+
+include: base.yaml
+
+properties:
+  label:
+    type: string
+    description: 人类可读的设备名称
+
+  adc:
+    type: phandle
+    description: ADC设备的句柄
+    required: true
+
+  adc-thresholds:
+    type: array
+    description: 各设备类型对应的ADC阈值(毫伏)，按设备类型顺序排列
+    required: true
+
+  adc-threshold-tolerance:
+    type: int
+    description: ADC阈值的容差(毫伏)，用于处理ADC读数的波动
+    default: 50
+
+  poll-interval-ms:
+    type: int
+    description: 设备检测的轮询间隔(毫秒)
+    default: 1000 

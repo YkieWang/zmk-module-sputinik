@@ -1,0 +1,4 @@
+# Copyright (c) 2023 ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+source "$(ZEPHYR_ZMKDEVICEDETECTOR_MODULE_DIR)/zephyr/Kconfig" 

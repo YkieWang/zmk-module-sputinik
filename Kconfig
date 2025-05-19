@@ -1,0 +1,157 @@
+# Copyright (c) 2023 ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+menuconfig ZMK_DEVICE_DETECTOR
+    bool "ZMK设备检测器"
+    depends on ADC
+    depends on DT_HAS_ZMK_DEVICE_DETECTOR_ENABLED
+    help
+      启用ZMK设备检测器驱动，用于通过ADC识别和初始化不同类型的设备。
+
+if ZMK_DEVICE_DETECTOR
+
+config ZMK_DEVICE_DETECTOR_INIT_PRIORITY
+    int "设备检测器初始化优先级"
+    default 90
+    help
+      设备检测器的设备初始化优先级。
+
+module = ZMK_DEVICE_DETECTOR
+module-str = zmk_device_detector
+source "subsys/logging/Kconfig.template.log_config"
+
+endif # ZMK_DEVICE_DETECTOR
+
+# PMW3610轨迹球驱动配置
+menuconfig PMW3610
+    bool "PMW3610轨迹球驱动"
+    default n
+    depends on SPI
+    depends on INPUT
+    help
+      启用PMW3610轨迹球驱动。
+
+if PMW3610
+
+config PMW3610_INIT_POWER_UP_EXTRA_DELAY_MS
+    int "PMW3610初始化额外延迟时间(毫秒)"
+    default 0
+    help
+      在PMW3610初始化过程中添加额外的延迟时间，用于等待外部电源就绪。
+      在nice_nano_v2板上，如果出现"Incorrect product id 0xFF (expecting 0x3E)!"错误，
+      可以设置为300-1000毫秒。
+
+config PMW3610_INVERT_X
+    bool "反转X轴方向"
+    default n
+    help
+      反转X轴的移动方向。
+
+config PMW3610_INVERT_Y
+    bool "反转Y轴方向"
+    default n
+    help
+      反转Y轴的移动方向。
+
+config PMW3610_SWAP_XY
+    bool "交换X和Y轴"
+    default n
+    help
+      交换X和Y轴的移动方向。
+
+config PMW3610_REPORT_INTERVAL_MIN
+    int "最小报告间隔(毫秒)"
+    default 10
+    help
+      两次报告之间的最小间隔时间(毫秒)。
+
+module = PMW3610
+module-str = pmw3610
+source "subsys/logging/Kconfig.template.log_config"
+
+endif # PMW3610
+
+# 模拟输入(摇杆)驱动配置
+menuconfig ANALOG_INPUT
+    bool "模拟输入(摇杆)驱动"
+    default n
+    depends on ADC
+    depends on INPUT
+    help
+      启用模拟输入(摇杆)驱动。
+
+if ANALOG_INPUT
+
+config ANALOG_INPUT_REPORT_INTERVAL_MIN
+    int "最小报告间隔(毫秒)"
+    default 16
+    help
+      两次报告之间的最小间隔时间(毫秒)。
+
+config ANALOG_INPUT_LOG_DBG_RAW
+    bool "记录原始输入值"
+    default n
+    help
+      在调试日志中记录原始的ADC输入值。
+
+config ANALOG_INPUT_LOG_DBG_REPORT
+    bool "记录报告值"
+    default n
+    help
+      在调试日志中记录处理后的报告值。
+
+module = ANALOG_INPUT
+module-str = analog_input
+source "subsys/logging/Kconfig.template.log_config"
+
+endif # ANALOG_INPUT
+
+# EC11旋钮编码器驱动配置
+menuconfig EC11
+    bool "EC11旋转编码器支持"
+    default y
+    depends on GPIO
+    help
+      启用EC11旋转编码器支持。
+
+if EC11
+
+choice EC11_TRIGGER_MODE
+    prompt "触发模式"
+    default EC11_TRIGGER_GLOBAL_THREAD
+    help
+      指定驱动程序使用的触发类型。
+
+config EC11_TRIGGER_NONE
+    bool "无触发"
+
+config EC11_TRIGGER_GLOBAL_THREAD
+    bool "使用全局线程"
+    depends on GPIO
+    select EC11_TRIGGER
+
+config EC11_TRIGGER_OWN_THREAD
+    bool "使用自己的线程"
+    depends on GPIO
+    select EC11_TRIGGER
+
+endchoice
+
+config EC11_TRIGGER
+    bool
+
+config EC11_THREAD_PRIORITY
+    int "线程优先级"
+    depends on EC11_TRIGGER_OWN_THREAD
+    default 10
+    help
+      驱动程序用于处理中断的线程优先级。
+
+config EC11_THREAD_STACK_SIZE
+    int "线程栈大小"
+    depends on EC11_TRIGGER_OWN_THREAD
+    default 1024
+    help
+      驱动程序用于处理中断的线程栈大小。
+
+endif # EC11
